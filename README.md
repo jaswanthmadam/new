@@ -50,7 +50,7 @@ A next-generation AI Restaurant Operating System built with the **Elo One luxury
 
 ### Deploy on Vercel
 
-Import this GitHub repository into Vercel and leave the framework preset, root directory, and build settings on their automatic defaults. Vercel detects `app.py` as the FastAPI application and installs the dependencies from `requirements.txt`. Each serverless instance uses a seeded demo database in temporary storage; its data can reset when Vercel replaces that instance. Use a managed database for data that must persist across deployments or instances.
+Import this GitHub repository into Vercel, select the Python framework, and set the Root Directory to the repository root (leave it blank). Vercel loads the FastAPI app from `app.py` as configured in `pyproject.toml` and installs dependencies from `requirements.txt`. Each serverless instance uses a seeded demo database in temporary storage; its data can reset when Vercel replaces that instance. Use a managed database for data that must persist across deployments or instances.
 
 ### Run locally
 
