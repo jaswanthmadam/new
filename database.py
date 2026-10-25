@@ -3,7 +3,13 @@ import json
 import os
 from datetime import datetime, timedelta
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "restro.db")
+# Vercel's deployed source is read-only. Keep the demo database in writable
+# temporary storage there; local development continues to use the project DB.
+DB_PATH = (
+    os.path.join("/tmp", "restro.db")
+    if os.environ.get("VERCEL") == "1"
+    else os.path.join(os.path.dirname(__file__), "restro.db")
+)
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)

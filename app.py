@@ -10,9 +10,14 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from database import get_connection, init_db
+from database import DB_PATH, get_connection, init_db
 from seed_data import seed_database
 import forecast_engine
+
+# A Vercel function cannot modify files shipped in its deployment bundle.
+# Build a fresh demo database under /tmp on each new function instance.
+if os.environ.get("VERCEL") == "1" and not os.path.exists(DB_PATH):
+    seed_database()
 
 app = FastAPI(title="restro.in - AI Restaurant Operating System", version="2.5.0")
 
