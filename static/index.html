@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elo Restro OS – AI Restaurant Operating & Intelligence System</title>
+  
+  <!-- Lexend Font family (Elo One design system) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body class="dark-theme">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Login Screen Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-logo-badge">R</div>
+      <div class="login-header">
+        <h2>restro<span>.in</span></h2>
+        <p>AI Restaurant Operations & Live Kitchen System</p>
+      </div>
+      <form id="login-form" onsubmit="handleLoginSubmit(event)">
+        <div class="form-group" style="text-align: left;">
+          <label>Username</label>
+          <input type="text" id="login-username" class="form-input" placeholder="e.g. admin" required value="admin">
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label>Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="Password" required value="admin123">
+        </div>
+        <div id="login-error" style="color:#EF4444;font-size:0.82rem;min-height:18px;margin-top:4px;"></div>
+        <button type="submit" class="btn btn-brand btn-block" style="margin-top: 10px;">Sign In to Dashboard</button>
+      </form>
+      <div class="demo-logins">
+        <span>Quick Demo Access:</span>
+        <div class="demo-pills">
+          <button type="button" class="pill-btn" onclick="fillLogin('admin','admin123')">Admin (Full)</button>
+          <button type="button" class="pill-btn" onclick="fillLogin('manager','manager123')">Manager (Ops)</button>
+          <button type="button" class="pill-btn" onclick="fillLogin('kitchen','kitchen123')">Kitchen (KOT)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-logo-badge" style="font-weight: 800; font-size: 1.5rem; letter-spacing: -0.05em;">
+          R
+        </div>
+        <div>
+          <div class="brand-title-wrap">
+            <h1 class="brand-title">restro<span class="accent-text">.in</span></h1>
+            <span class="badge-tag">OS v2.5</span>
+          </div>
+          <p class="brand-sub" id="header-restaurant-title">Royal Zaika & Biryani Darbar • Indiranagar, BLR</p>
+        </div>
+      </div>
+
+      <!-- Live Operational Status Bar -->
+      <div class="status-strip">
+        <div class="status-pill status-live">
+          <span class="pulse-dot"></span>
+          <span id="header-op-status">Open & Accepting Orders</span>
+        </div>
+        <div class="status-pill status-kitchen" id="kitchen-status-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+          <span id="header-kitchen-status">Peak Dinner Rush</span>
+        </div>
+        <div class="status-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span id="header-active-staff">8 Staff Clocked In</span>
+        </div>
+        <!-- Active User Badge & Role -->
+        <div class="status-pill" id="user-role-badge" style="background: rgba(184, 70, 15, 0.12); border-color: rgba(184, 70, 15, 0.3); color: #EC601C;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="header-user-display">Admin (Rajesh)</span>
+        </div>
+      </div>
+
+      <!-- Header Quick Actions -->
+      <div class="header-actions">
+        <!-- Telegram 9 PM Summary -->
+        <button id="btn-daily-summary" class="btn btn-secondary" title="View 9 PM Telegram Daily Summary Digest">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.58-.46.72-.94.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.52.26l.18-2.62 4.78-4.32c.2-.18-.04-.28-.32-.1L8.36 13.8l-2.54-.8c-.56-.18-.56-.56.12-.82l9.92-3.82c.46-.16.86.12.74.84z"/></svg>
+          <span>9 PM Digest</span>
+        </button>
+
+        <!-- Logout Button -->
+        <button id="btn-logout" class="btn btn-ghost" onclick="logoutUser()" title="Logout from restro.in">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Logout</span>
+        </button>
+
+        <!-- Reset Demo Data -->
+        <button id="btn-reset-demo" class="btn btn-ghost" title="Reset all demo data to pristine state">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Reset Demo</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="btn btn-icon" title="Toggle Light / Dark mode">
+          <svg id="theme-icon-sun" class="theme-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="theme-icon-moon" class="theme-icon hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs: Renamed to clear, understandable names -->
+    <nav class="tabs-nav">
+      <div class="tabs-inner">
+        <button class="nav-tab active" data-tab="tab-overview" id="nav-tab-overview">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          <span>Business Overview</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-forecast" id="nav-tab-forecast">
+          <span class="flagship-badge">AI PLAN</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Stock & Reorder Planning</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-menu-audit" id="nav-tab-menu-audit">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span>Menu Profit & Food Waste</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-kot-orders" id="nav-tab-kot-orders">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 18a2 2 0 1 0 4 0 2 2 0 1 0-4 0z"/><path d="M6 6H2"/></svg>
+          <span>Live Orders & Billing</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-invoices" id="nav-tab-invoices">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Invoice Checker & Calculator</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-assistant" id="nav-tab-assistant">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>AI Assistant</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-profile" id="nav-tab-profile">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Restaurant & Staff Management</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- ========================================== -->
+    <!-- TAB 1: EXECUTIVE DASHBOARD                 -->
+    <!-- ========================================== -->
+    <section id="tab-overview" class="tab-pane active">
+      <!-- Top Elo One Headline -->
+      <div class="hero-headline">
+        <h2 class="title-display">
+          Precision Restaurant Operating System
+        </h2>
+        <p class="lead-text">
+          Real-time margin intelligence, festival-aware stock forecasting, and automated wastage leakage guard for high-growth dining.
+        </p>
+        <div class="brand-divider"></div>
+      </div>
+
+      <!-- Elo One Featured Gradient Showcase Cards -->
+      <div class="cards-showcase">
+        <!-- Card 1: AI Stock & Festival Forecast (Radial Espresso Ember) -->
+        <div class="card-wrap">
+          <div class="card c1">
+            <div class="card-top">
+              <div>
+                <h3>AI Stock Forecasting</h3>
+                <p>Festival & demand-aware engine</p>
+              </div>
+              <svg class="mono" viewBox="0 0 24 24">
+                <path d="M2 19 9 7l4 6 2.5-3.5L22 19Z"/>
+                <path d="m7 10.5 2 1.5 2-1.5"/>
+              </svg>
+            </div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="num" id="stat-festival-boost">+35%</div>
+                <div class="lbl">Diwali Demand Lift</div>
+              </div>
+              <div class="stat">
+                <div class="num" id="stat-po-cost">₹14.2k</div>
+                <div class="lbl">Suggested Safe PO</div>
+              </div>
+            </div>
+            <div class="stage">
+              <div class="paper p2"></div>
+              <div class="paper p1"></div>
+              <div class="photo">
+                <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" alt="Dum Biryani Handi" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: True Dish Profitability (Sunset Amber Gradient) -->
+        <div class="card-wrap">
+          <div class="card c2">
+            <div class="card-top">
+              <div>
+                <h3>Dish Profitability</h3>
+                <p>True gross margin per plate</p>
+              </div>
+              <svg class="mono" viewBox="0 0 24 24">
+                <path d="M3 11 12 3l9 8"/>
+                <path d="M5.5 9.5V21h13V9.5"/>
+                <path d="M10 21v-6h4v6"/>
+              </svg>
+            </div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="num" id="stat-overall-margin">65.3%</div>
+                <div class="lbl">Avg Dish Margin</div>
+              </div>
+              <div class="stat">
+                <div class="num" id="stat-best-seller">Biryani</div>
+                <div class="lbl">Top Profit Driver</div>
+              </div>
+            </div>
+            <div class="stage">
+              <div class="paper p2"></div>
+              <div class="paper p1"></div>
+              <div class="photo">
+                <img src="https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" alt="Shahi Paneer Masala" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Wastage & Theft Shield (Terracotta Ember) -->
+        <div class="card-wrap">
+          <div class="card c3">
+            <div class="card-top">
+              <div>
+                <h3>Wastage & Theft Guard</h3>
+                <p>Recipe vs stock draw audit</p>
+              </div>
+              <svg class="mono" viewBox="0 0 24 24">
+                <path d="M12 4c2.2 2.2 3 4.6 3 7s-1.2 4.4-3 6c-1.8-1.6-3-3.6-3-6s.8-4.8 3-7Z"/>
+                <path d="M9 11.5C6.2 11.2 4 12.6 3 15c2.6 1.6 5.6 1.8 9 2"/>
+                <path d="M15 11.5c2.8-.3 5 1.1 6 3.5-2.6 1.6-5.6 1.8-9 2"/>
+                <path d="M5 19.5c2.2.9 4.5 1.3 7 1.3s4.8-.4 7-1.3"/>
+              </svg>
+            </div>
+            <div class="card-stats">
+              <div class="stat">
+                <div class="num" id="stat-savings-calc">₹38.4k</div>
+                <div class="lbl">Est. Monthly Savings</div>
+              </div>
+              <div class="stat">
+                <div class="num" id="stat-anomaly-variance">-24.8%</div>
+                <div class="lbl">Paneer Gap Flagged</div>
+              </div>
+            </div>
+            <div class="stage">
+              <div class="paper p2"></div>
+              <div class="paper p1"></div>
+              <div class="photo">
+                <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80" alt="Dal Makhani Pot" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Key Metric Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">TOTAL SALES (30D)</div>
+          <div class="kpi-value" id="kpi-total-sales">₹687,900</div>
+          <div class="kpi-delta positive">↑ 18.4% vs last month</div>
+        </div>
+        <div class="kpi-card highlight-card">
+          <div class="kpi-label">TRUE NET PROFIT</div>
+          <div class="kpi-value accent" id="kpi-total-profit">₹412,740</div>
+          <div class="kpi-delta positive">Margin: 60.0% net</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">ACTIVE WORKERS ROSTER</div>
+          <div class="kpi-value" id="kpi-workers">8 Floor Staff</div>
+          <div class="kpi-sub">Shift capacity: 120 orders</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">TABLE OCCUPANCY</div>
+          <div class="kpi-value" id="kpi-tables">16 / 22 Tables</div>
+          <div class="kpi-sub">72.7% seated floor load</div>
+        </div>
+        <div class="kpi-card alert-card">
+          <div class="kpi-label">DEAD STOCK ALERT</div>
+          <div class="kpi-value" id="kpi-dead-stock">2 Items Stalled</div>
+          <div class="kpi-sub" id="kpi-dead-stock-sub">Saffron Syrup (22d unsold)</div>
+        </div>
+      </div>
+
+      <!-- Channel Breakdown & Wastage Alert Banner -->
+      <div class="overview-dual-grid">
+        <!-- Channel Net Profit Comparison -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>True Profit By Channel (Aggregator Unification)</h3>
+            <span class="badge-pill">Commission Deductions Included</span>
+          </div>
+          <p class="panel-desc">Shows true take-home profit after Swiggy (22%) and Zomato (24%) aggregator fees vs Dine-in.</p>
+          
+          <div class="channel-bars">
+            <div class="channel-item">
+              <div class="channel-row">
+                <span class="channel-name">Dine-In (Direct Guests)</span>
+                <span class="channel-metric">64.2% Net Margin • 0% Commission</span>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill dinein-bar" style="width: 64.2%"></div></div>
+            </div>
+
+            <div class="channel-item">
+              <div class="channel-row">
+                <span class="channel-name">Swiggy Orders</span>
+                <span class="channel-metric">46.8% Net Margin • -22% Commission</span>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill swiggy-bar" style="width: 46.8%"></div></div>
+            </div>
+
+            <div class="channel-item">
+              <div class="channel-row">
+                <span class="channel-name">Zomato Orders</span>
+                <span class="channel-metric">44.5% Net Margin • -24% Commission</span>
+              </div>
+              <div class="progress-bar-bg"><div class="progress-bar-fill zomato-bar" style="width: 44.5%"></div></div>
+            </div>
+          </div>
+
+          <div class="channel-callout">
+            <strong>AI Channel Strategy:</strong> Dine-in yields +19.7% higher net profit than Swiggy/Zomato. Implement in-bag QR table vouchers to migrate delivery patrons to physical visits.
+          </div>
+        </div>
+
+        <!-- Planted Anomaly Callout -->
+        <div class="panel-card alert-border">
+          <div class="panel-header">
+            <div class="alert-title-wrap">
+              <span class="alert-icon-pulse">⚠️</span>
+              <h3>Planted Anomaly: Consumption Gap Flagged</h3>
+            </div>
+            <span class="badge-danger">₹4,200 Weekly Loss</span>
+          </div>
+          <div class="anomaly-box">
+            <h4>Malai Paneer (+24.8% Usage Variance)</h4>
+            <p>
+              Theoretical recipe consumption: <strong>75.6 kg</strong> (from 440 billed Shahi Paneer portions).
+              Actual stock drawn from store: <strong>94.4 kg</strong>.
+            </p>
+            <div class="anomaly-meter">
+              <div class="meter-bar expected" style="width: 65%">Expected (75.6 kg)</div>
+              <div class="meter-bar leakage" style="width: 35%">Leakage Gap (+18.8 kg)</div>
+            </div>
+            <div class="anomaly-causes">
+              <span>Potential Triggers:</span>
+              <ul>
+                <li>Kitchen prep station trimming excess without weighing</li>
+                <li>Staff shift snacking or unrecorded complimentary dishes</li>
+                <li>Receiving scale calibration error during morning dairy check-in</li>
+              </ul>
+            </div>
+            <button class="btn btn-sm btn-outline" onclick="switchTab('tab-menu-audit')">Investigate Wastage Audit →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: AI STOCK & FESTIVAL FORECAST        -->
+    <!-- ========================================== -->
+    <section id="tab-forecast" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <span class="badge-tag">CORE AI ENGINE</span>
+          <h2 class="section-title">Stock Recommendation with Visible Reasoning</h2>
+          <p class="section-desc">Festival-aware predictive replenishment with mathematical logic and strict perishability wastage guards.</p>
+        </div>
+        <div class="forecast-action-group">
+          <button id="btn-generate-po" class="btn btn-brand">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span>1-Click PO to WhatsApp</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Festival Simulator Controls -->
+      <div class="festival-simulator-card">
+        <div class="sim-header">
+          <div class="sim-title">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Indian Festival & Event Simulator</span>
+          </div>
+          <span class="sim-tip">Click any scenario to see stock recommendations & reasoning adapt in real-time</span>
+        </div>
+
+        <div class="festival-pills" id="festival-pills-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="current-festival-context" id="festival-context-card">
+          <div class="context-badge" id="context-badge-name">Diwali Festive Weekend</div>
+          <div class="context-body">
+            <p id="context-reasoning-desc">Diwali festival weekend brings high celebratory dine-in feasts and catering. Historical trend shows +35% total demand with dramatic spikes in sweets (+60%) and dairy (+45%).</p>
+          </div>
+          <div class="context-impact">
+            <span class="impact-stat">Demand Lift: <strong id="context-lift-pct">+35%</strong></span>
+            <span class="impact-stat">Perishable Buffer: <strong>1.15x Max</strong></span>
+            <span class="impact-stat">Wastage Guard: <strong>Active</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wastage Guard Policy Card -->
+      <div class="wastage-guard-banner">
+        <div class="guard-icon">🛡️</div>
+        <div class="guard-text">
+          <strong>Active Wastage Guard Policy:</strong> Perishables (Fresh Paneer, Cream, Poultry, Fresh Herbs) have shelf life ≤ 3 days and are strictly capped into 2-day micro-batches. Dry grains (Basmati Rice, Oil, Spices) are bulk-batched (EOQ) for maximum supplier discounts.
+        </div>
+      </div>
+
+      <!-- Forecast Inventory Table -->
+      <div class="table-container">
+        <table class="elo-table">
+          <thead>
+            <tr>
+              <th>Ingredient & Category</th>
+              <th>Shelf Life</th>
+              <th>Wastage Guard Mode</th>
+              <th>Current Stock</th>
+              <th>Projected Demand</th>
+              <th>AI Recommended Order</th>
+              <th>Est. Cost</th>
+              <th>Step-by-Step Visible Reasoning</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="forecast-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: MENU MATRIX & WASTAGE AUDIT         -->
+    <!-- ========================================== -->
+    <section id="tab-menu-audit" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title">Dynamic Menu Engineering & Wastage Audit</h2>
+          <p class="section-desc">BCG Matrix classification (Star, Plow-horse, Puzzle, Dog), true recipe margins, and consumption leak detection.</p>
+        </div>
+      </div>
+
+      <!-- Menu Matrix (BCG Quadrants) -->
+      <div class="bcg-grid">
+        <!-- Star Quadrant -->
+        <div class="bcg-card bcg-star">
+          <div class="bcg-header">
+            <div class="bcg-badge">⭐ STARS</div>
+            <span class="bcg-sub">High Popularity • High Margin</span>
+          </div>
+          <p class="bcg-strategy">Action: Protect taste consistency, anchor hero menu placement.</p>
+          <div class="bcg-items" id="bcg-stars-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Plow-Horse Quadrant -->
+        <div class="bcg-card bcg-plow">
+          <div class="bcg-header">
+            <div class="bcg-badge">🐎 PLOW-HORSES</div>
+            <span class="bcg-sub">High Popularity • Low Margin</span>
+          </div>
+          <p class="bcg-strategy">Action: Reprice by +10%, re-engineer portion yield, bundle combos.</p>
+          <div class="bcg-items" id="bcg-plow-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Puzzle Quadrant -->
+        <div class="bcg-card bcg-puzzle">
+          <div class="bcg-header">
+            <div class="bcg-badge">🧩 PUZZLES</div>
+            <span class="bcg-sub">Low Popularity • High Margin</span>
+          </div>
+          <p class="bcg-strategy">Action: Promote as Chef's Special, train stewards to suggest.</p>
+          <div class="bcg-items" id="bcg-puzzle-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Dog Quadrant -->
+        <div class="bcg-card bcg-dog">
+          <div class="bcg-header">
+            <div class="bcg-badge">🐶 DOGS</div>
+            <span class="bcg-sub">Low Popularity • Low Margin</span>
+          </div>
+          <p class="bcg-strategy">Action: Remove from menu to cut prep overhead and spoilage risk.</p>
+          <div class="bcg-items" id="bcg-dogs-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Recipe Consumption Leakage & Anomaly Audit -->
+      <div class="anomaly-section">
+        <div class="panel-header">
+          <div>
+            <h3>Recipe Theoretical vs Actual Consumption Audit</h3>
+            <p class="panel-desc">Compares ingredient draw calculated by billings against physical stock draw.</p>
+          </div>
+          <div class="badge-danger">2 Active Variances Found</div>
+        </div>
+
+        <div class="anomaly-cards-grid" id="anomaly-cards-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- Expiry-Aware Special Combos Generator -->
+      <div class="expiry-combo-banner">
+        <div class="combo-info">
+          <span class="badge-tag">EXPIRY-AWARE REVENUE ENGINE</span>
+          <h3>Dynamic Combo Suggestion for Slow-Moving Stock</h3>
+          <p>
+            Identified: <strong>Rich Cooking Cream & Saffron Syrup</strong> expiring in 3 days.
+            Suggested action: Auto-push <strong>"Shahi Feast Combo: Paneer Butter Masala + Kesari Phirni (₹399, save 15%)"</strong> on Dine-in tent cards and Zomato banner.
+          </p>
+        </div>
+        <button class="btn btn-brand" onclick="alert('Combo activated on menu displays and POS!')">Activate Combo Special</button>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: LIVE ORDERS & BILLING               -->
+    <!-- ========================================== -->
+    <section id="tab-kot-orders" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title">Live Orders & Kitchen Display (KOT)</h2>
+          <p class="section-desc">Create staff orders with the full live menu, track status transitions, and update quantities instantly.</p>
+        </div>
+      </div>
+
+      <div class="kot-layout" style="grid-template-columns: 1.2fr 1.3fr;">
+        <!-- Left: Live KOT Board with Status Buttons & Edit Qty -->
+        <div class="kot-board">
+          <div class="kot-board-header">
+            <h3>Live Kitchen Tickets (KOT)</h3>
+            <span class="badge-live-count" id="kot-count-badge">0 Active Orders</span>
+          </div>
+
+          <div class="kot-tickets-grid" id="kot-tickets-container">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Right: Staff Order Builder (Full Menu) & QR Portal -->
+        <div class="staff-order-builder">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.1rem; font-weight: 600;">Staff POS Order Builder</h3>
+            <span class="badge-tag">Full Menu Linked</span>
+          </div>
+
+          <div class="order-filter-bar">
+            <input type="text" id="staff-menu-search" class="order-search-input" placeholder="Search dishes (e.g. Biryani, Naan)..." oninput="filterStaffMenu()">
+            <div class="category-pills" id="staff-category-pills">
+              <button type="button" class="cat-pill active" onclick="setMenuCategory('All')">All</button>
+              <button type="button" class="cat-pill" onclick="setMenuCategory('Mains')">Mains</button>
+              <button type="button" class="cat-pill" onclick="setMenuCategory('Starters')">Starters</button>
+              <button type="button" class="cat-pill" onclick="setMenuCategory('Breads')">Breads</button>
+              <button type="button" class="cat-pill" onclick="setMenuCategory('Dessert')">Dessert</button>
+            </div>
+          </div>
+
+          <!-- Full Menu Grid -->
+          <div class="menu-items-grid" id="staff-menu-grid">
+            <!-- Populated dynamically via JS from /api/menu-items -->
+          </div>
+
+          <!-- Current Order Cart -->
+          <div class="order-cart-box">
+            <div class="order-cart-header">
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <label style="font-size: 0.8rem; font-weight: 600;">Table #:</label>
+                <select id="staff-order-table" class="form-input" style="width: auto; padding: 4px 10px;">
+                  <option value="Table 1">Table 1</option>
+                  <option value="Table 2">Table 2</option>
+                  <option value="Table 3">Table 3</option>
+                  <option value="Table 4">Table 4</option>
+                  <option value="Table 7">Table 7</option>
+                  <option value="Table 9">Table 9</option>
+                  <option value="Table 12">Table 12</option>
+                  <option value="Takeaway Counter">Takeaway Counter</option>
+                </select>
+              </div>
+              <input type="text" id="staff-customer-name" class="form-input" placeholder="Guest / Server Name" value="Server Amit" style="width: 160px; padding: 4px 8px;">
+            </div>
+
+            <div style="max-height: 180px; overflow-y: auto;">
+              <table class="cart-items-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th style="width: 90px; text-align: center;">Qty</th>
+                    <th style="text-align: right;">Price</th>
+                    <th style="width: 30px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="staff-cart-body">
+                  <tr><td colspan="4" style="text-align:center; color: var(--ink-muted); padding: 14px;">Select dishes from menu above to build order</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="qr-order-summary" style="margin: 10px 0 14px;">
+              <span>Subtotal:</span>
+              <strong id="staff-cart-total-display" style="color: var(--brand); font-size: 1.1rem;">₹0.00</strong>
+            </div>
+
+            <button type="button" class="btn btn-brand btn-block" onclick="submitStaffOrder()">
+              <span>Send Order to Kitchen</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: INVOICE CHECKER & CALCULATOR        -->
+    <!-- ========================================== -->
+    <section id="tab-invoices" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <span class="badge-tag">AUTOMATED PROCUREMENT AUDITOR</span>
+          <h2 class="section-title">Invoice Checker & Calculator</h2>
+          <p class="section-desc">Upload or enter vendor invoices. Automatically verifies line math, price hikes vs contract rates, quantity shortfall, and tax reconciliation.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-outline" onclick="loadSampleInvoice()">Use Sample Vendor Bill</button>
+        </div>
+      </div>
+
+      <div class="invoice-workspace">
+        <!-- Left: Upload & Editable Invoice Fields -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Invoice Data Extraction & Verification</h3>
+            <span class="badge-pill" id="invoice-status-badge">Ready for Audit</span>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div class="invoice-upload-zone" onclick="document.getElementById('invoice-file-input').click()">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--brand); margin-bottom: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p><strong>Click to Upload Invoice</strong> (PDF, Image, or CSV)</p>
+            <span style="font-size: 0.75rem; color: var(--ink-muted);">Auto-extracts supplier, line items, taxes and reconciles against inventory master</span>
+            <input type="file" id="invoice-file-input" style="display: none;" onchange="handleInvoiceFileUpload(event)">
+          </div>
+
+          <!-- Invoice Details Form -->
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Supplier Name</label>
+              <input type="text" id="inv-supplier" class="form-input" value="Nandini Milk Co-op & Dairy">
+            </div>
+            <div class="form-group flex-1">
+              <label>Invoice Number</label>
+              <input type="text" id="inv-number" class="form-input" value="INV-2026-904">
+            </div>
+            <div class="form-group flex-1">
+              <label>Invoice Date</label>
+              <input type="date" id="inv-date" class="form-input" value="2026-10-25">
+            </div>
+          </div>
+
+          <!-- Editable Line Items Table -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+            <h4 style="font-size: 0.95rem; font-weight: 600;">Billed Line Items</h4>
+            <button class="btn btn-sm btn-outline" type="button" onclick="addInvoiceLineRow()">+ Add Line</button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="invoice-items-editable">
+              <thead>
+                <tr>
+                  <th>Item Description</th>
+                  <th style="width: 90px;">Qty</th>
+                  <th style="width: 70px;">Unit</th>
+                  <th style="width: 100px;">Rate (₹)</th>
+                  <th style="width: 110px;">Line Total (₹)</th>
+                  <th style="width: 100px;">Audit Status</th>
+                  <th style="width: 30px;"></th>
+                </tr>
+              </thead>
+              <tbody id="invoice-lines-body">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Financial Summary Calculation -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+            <div>
+              <label style="font-size: 0.72rem; color: var(--ink-muted);">Subtotal</label>
+              <input type="number" id="inv-subtotal" class="form-input" step="0.01" value="7805.00" oninput="recalcInvoiceTotals()">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--ink-muted);">Tax Amount (GST)</label>
+              <input type="number" id="inv-tax" class="form-input" step="0.01" value="390.25" oninput="recalcInvoiceTotals()">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--ink-muted);">Discount</label>
+              <input type="number" id="inv-discount" class="form-input" step="0.01" value="0.00" oninput="recalcInvoiceTotals()">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--brand); font-weight: 600;">Grand Total (₹)</label>
+              <input type="number" id="inv-grandtotal" class="form-input" step="0.01" value="8195.25" style="font-weight: 700; color: var(--brand);">
+            </div>
+          </div>
+
+          <!-- Automated Validation Checks Container -->
+          <div class="validation-summary-card" id="validation-summary-box">
+            <h4 style="font-size: 0.85rem; font-weight: 600; color: #EC601C; margin-bottom: 6px;">Automated Audit Reconciliation Checks</h4>
+            <div id="validation-flags-list">
+              <!-- Dynamically populated flags -->
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 18px;">
+            <button class="btn btn-outline" type="button" onclick="runInvoiceAudit()">Re-check All Calculations</button>
+            <button class="btn btn-brand" type="button" onclick="saveVerifiedInvoice()">Save Invoice & Update Stock</button>
+          </div>
+        </div>
+
+        <!-- Right: Manual Re-check Calculator & Recent Invoice History -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Manual Calculator Panel -->
+          <div class="calc-panel">
+            <div class="panel-header" style="margin-bottom: 10px;">
+              <h4 style="font-size: 0.95rem;">Manual Receipt Calculator</h4>
+              <span class="badge-pill">Paper Bill Audit</span>
+            </div>
+            <div class="calc-display" id="calc-display-val">0</div>
+            <div class="calc-grid">
+              <button type="button" class="btn-calc" onclick="calcInput('C')">C</button>
+              <button type="button" class="btn-calc op" onclick="calcInput('/')">÷</button>
+              <button type="button" class="btn-calc op" onclick="calcInput('*')">×</button>
+              <button type="button" class="btn-calc op" onclick="calcInput('-')">−</button>
+
+              <button type="button" class="btn-calc" onclick="calcInput('7')">7</button>
+              <button type="button" class="btn-calc" onclick="calcInput('8')">8</button>
+              <button type="button" class="btn-calc" onclick="calcInput('9')">9</button>
+              <button type="button" class="btn-calc op" onclick="calcInput('+')">+</button>
+
+              <button type="button" class="btn-calc" onclick="calcInput('4')">4</button>
+              <button type="button" class="btn-calc" onclick="calcInput('5')">5</button>
+              <button type="button" class="btn-calc" onclick="calcInput('6')">6</button>
+              <button type="button" class="btn-calc op" onclick="calcInput('=')" style="background: var(--brand); color: #fff;">=</button>
+
+              <button type="button" class="btn-calc" onclick="calcInput('1')">1</button>
+              <button type="button" class="btn-calc" onclick="calcInput('2')">2</button>
+              <button type="button" class="btn-calc" onclick="calcInput('3')">3</button>
+              <button type="button" class="btn-calc" onclick="calcInput('0')">0</button>
+            </div>
+          </div>
+
+          <!-- Invoice Ledger History -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h4 style="font-size: 0.95rem;">Recent Invoices</h4>
+              <span class="badge-pill" id="invoices-count-pill">2 Recorded</span>
+            </div>
+            <input type="text" id="invoice-history-search" class="form-input" placeholder="Search supplier / inv #..." style="margin-bottom: 10px;" oninput="filterInvoiceHistory()">
+            <div id="invoice-history-list" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: NATURAL LANGUAGE ASSISTANT          -->
+    <!-- ========================================== -->
+    <section id="tab-assistant" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <span class="badge-tag">CONVERSATIONAL AI</span>
+          <h2 class="section-title">Natural-Language Restaurant Assistant</h2>
+          <p class="section-desc">Ask questions with voice speech recognition or typed queries. Analyzes past sales, anomalies, and dish profitability.</p>
+        </div>
+      </div>
+
+      <div class="assistant-layout">
+        <!-- Chat Dialogue Box -->
+        <div class="assistant-chat-container">
+          <!-- Quick Prompt Pills -->
+          <div class="prompt-pills-row">
+            <span class="prompt-hint">Try asking:</span>
+            <button class="pill-btn" onclick="sendAssistantQuery('Why did profit drop last Tuesday?')">"Why did profit drop last Tuesday?"</button>
+            <button class="pill-btn" onclick="sendAssistantQuery('Which dish should I remove from the menu?')">"Which dish should I remove from the menu?"</button>
+            <button class="pill-btn" onclick="sendAssistantQuery('What should I order tomorrow?')">"What should I order tomorrow?"</button>
+            <button class="pill-btn" onclick="sendAssistantQuery('Show me high wastage or theft items')">"Show me high wastage or theft items"</button>
+            <button class="pill-btn" onclick="sendAssistantQuery('How is Swiggy vs Zomato vs Dine-in profit?')">"Swiggy vs Zomato vs Dine-in margin"</button>
+          </div>
+
+          <!-- Message History Window -->
+          <div class="chat-history" id="chat-history">
+            <!-- Sample welcome message -->
+            <div class="chat-bubble bubble-bot">
+              <div class="bubble-avatar">🤖</div>
+              <div class="bubble-content">
+                <strong>Namaste! I am your Elo Restro Assistant.</strong>
+                <p>I monitor your recipe costs, real-time sales, staff shifts, and inventory leakage. Ask me anything in English, Hindi, or Telugu (e.g., tap the mic and say <em>"Kal kya order karna hai?"</em> or type below).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar with Push-to-Talk Mic -->
+          <div class="chat-input-bar">
+            <button id="btn-voice-mic" class="btn btn-mic" title="Push-to-talk voice input">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </button>
+            <input type="text" id="assistant-text-input" placeholder="Type or speak a question (e.g. 'Why did profit drop last Tuesday?')..." class="chat-input" onkeydown="if(event.key === 'Enter') handleAssistantSend()">
+            <button class="btn btn-brand" onclick="handleAssistantSend()">
+              <span>Ask AI</span>
+            </button>
+          </div>
+          <div class="mic-status-label" id="mic-status-label">Mic ready. Push to talk.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 6: RESTAURANT PROFILE & STATUS         -->
+    <!-- ========================================== -->
+    <section id="tab-profile" class="tab-pane">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title">Restaurant Profile & Live Status Management</h2>
+          <p class="section-desc">Manage your establishment credentials, operational flags, seating capacity, and supplier directory.</p>
+        </div>
+      </div>
+
+      <div class="profile-layout">
+        <!-- Profile Form Card -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Establishment Details</h3>
+            <span class="badge-tag">FSSAI Registered</span>
+          </div>
+
+          <form id="restaurant-profile-form" onsubmit="handleProfileSave(event)" class="profile-form">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label>Restaurant Name</label>
+                <input type="text" id="prof-name" class="form-input" required>
+              </div>
+              <div class="form-group flex-2">
+                <label>Cuisine Category</label>
+                <input type="text" id="prof-cuisine" class="form-input" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Tagline / Motto</label>
+              <input type="text" id="prof-tagline" class="form-input">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>City</label>
+                <input type="text" id="prof-city" class="form-input">
+              </div>
+              <div class="form-group flex-2">
+                <label>Street Address</label>
+                <input type="text" id="prof-address" class="form-input">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Phone Contact</label>
+                <input type="text" id="prof-phone" class="form-input">
+              </div>
+              <div class="form-group flex-1">
+                <label>Official Email</label>
+                <input type="email" id="prof-email" class="form-input">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>FSSAI License No.</label>
+                <input type="text" id="prof-fssai" class="form-input">
+              </div>
+              <div class="form-group flex-1">
+                <label>GSTIN</label>
+                <input type="text" id="prof-gstin" class="form-input">
+              </div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <h3>Live Operations & Kitchen Status</h3>
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Operating Status</label>
+                <select id="prof-op-status" class="form-input">
+                  <option value="Open & Accepting Orders">Open & Accepting Orders</option>
+                  <option value="Dine-In Only (Delivery Paused)">Dine-In Only (Delivery Paused)</option>
+                  <option value="Kitchen Closed for Maintenance">Kitchen Closed for Maintenance</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label>Kitchen Pace</label>
+                <select id="prof-kitchen-status" class="form-input">
+                  <option value="Peak Dinner Rush">Peak Dinner Rush</option>
+                  <option value="Normal Steady Pace">Normal Steady Pace</option>
+                  <option value="Prep Shift Active">Prep Shift Active</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Total Tables</label>
+                <input type="number" id="prof-tables" class="form-input" min="1">
+              </div>
+              <div class="form-group flex-1">
+                <label>Active Seated Tables</label>
+                <input type="number" id="prof-active-tables" class="form-input" min="0">
+              </div>
+              <div class="form-group flex-1">
+                <label>Active Floor Staff</label>
+                <input type="number" id="prof-active-staff" class="form-input" min="1">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-brand">Save Restaurant Profile & Status</button>
+          </form>
+        </div>
+
+        <!-- Supplier Directory Quick View -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Registered Suppliers</h3>
+            <span class="badge-pill">1-Click Dispatch Ready</span>
+          </div>
+          <div class="supplier-list">
+            <div class="supplier-card">
+              <div class="supplier-name">Nandini Milk Co-op & Dairy</div>
+              <div class="supplier-cat">Category: Dairy (Paneer, Cream, Milk)</div>
+              <div class="supplier-contact">📞 +91 98450 11223 • Delivery: 6:00 AM</div>
+            </div>
+            <div class="supplier-card">
+              <div class="supplier-name">Suguna Fresh Farms</div>
+              <div class="supplier-cat">Category: Chilled Poultry & Cuts</div>
+              <div class="supplier-contact">📞 +91 99800 44556 • Delivery: 7:30 AM</div>
+            </div>
+            <div class="supplier-card">
+              <div class="supplier-name">KR Market Green Agro Mandi</div>
+              <div class="supplier-cat">Category: Farm Produce (Tomatoes, Onions, Herbs)</div>
+              <div class="supplier-contact">📞 +91 94480 77889 • Delivery: Daily Mandi Rates</div>
+            </div>
+            <div class="supplier-card">
+              <div class="supplier-name">National Grain Mart</div>
+              <div class="supplier-cat">Category: Bulk Aged Basmati & Grains</div>
+              <div class="supplier-contact">📞 +91 98440 33211 • Delivery: 24h Lead time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff Details & Live Work Progress Table -->
+      <div class="panel-card" style="margin-top: 24px;">
+        <div class="panel-header">
+          <div>
+            <h3>Staff Roster & Live Work Progress</h3>
+            <p class="panel-desc">Real-time shift tracking, orders handled, efficiency score, and current culinary task.</p>
+          </div>
+          <span class="badge-tag">8 Members on Shift</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="staff-progress-table">
+            <thead>
+              <tr>
+                <th>Staff Member</th>
+                <th>Role</th>
+                <th>Shift</th>
+                <th>Contact</th>
+                <th style="width: 100px;">Orders Done</th>
+                <th style="width: 180px;">Efficiency Progress</th>
+                <th>Current Live Task</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="staff-members-table-body">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: 9 PM TELEGRAM / WHATSAPP DIGEST     -->
+  <!-- ========================================== -->
+  <div id="modal-daily-summary" class="modal-backdrop hidden">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">📲</span>
+          <div>
+            <h3>9:00 PM Daily Executive Summary</h3>
+            <p>Sent via Telegram Bot / WhatsApp Business</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-daily-summary')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="telegram-preview-box" id="telegram-preview-text">
+          <!-- Text loaded from API -->
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-daily-summary')">Close</button>
+        <button class="btn btn-brand" onclick="sendTelegramMock()">
+          <span>Push to Owner's Phone</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: 1-CLICK PURCHASE ORDER DISPATCH    -->
+  <!-- ========================================== -->
+  <div id="modal-po-dispatch" class="modal-backdrop hidden">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">📦</span>
+          <div>
+            <h3>One-Click Purchase Order Dispatch</h3>
+            <p>Approve AI replenishment & send PO</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-po-dispatch')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="po-preview-card">
+          <div class="po-preview-header">
+            <strong id="po-supplier-title">Supplier: Nandini Dairy Co-op</strong>
+            <span class="badge-tag">Wastage Guard Verified</span>
+          </div>
+          <div class="po-body-text" id="po-preview-text">
+            <!-- Text dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-po-dispatch')">Cancel</button>
+        <button class="btn btn-brand btn-whatsapp" id="btn-dispatch-whatsapp">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2z"/></svg>
+          <span>Send via WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT KOT TICKET QUANTITY            -->
+  <!-- ========================================== -->
+  <div id="modal-edit-order" class="modal-backdrop hidden">
+    <div class="modal-window" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">✏️</span>
+          <div>
+            <h3 id="edit-order-title">Update Order Quantities</h3>
+            <p id="edit-order-sub">Modify live ticket items without duplicating</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal('modal-edit-order')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="edit-order-items-list" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Item rows with + and - -->
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 16px; font-weight: 700; font-size: 1rem; border-top: 1px solid var(--divider); padding-top: 12px;">
+          <span>Recalculated Total:</span>
+          <span id="edit-order-total" style="color: var(--brand);">₹0.00</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-edit-order')">Cancel</button>
+        <button class="btn btn-brand" onclick="saveOrderQuantityChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/app.js"></script>
+</body>
+</html>
